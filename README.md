@@ -43,6 +43,28 @@ You can optionally specify a column to store the full JSON output of the geocode
 
 The full JSON format is [described here](https://opencagedata.com/api#response).
 
+## Configuration
+
+You can use this plugin without configuration, but you'll need to enter your API key every time you run an enrichment.
+
+To avoid that, you can set your API key as plugin configuration like this:
+
+```bash
+export OPENCAGE_API_KEY="your-api-key"
+```
+Then in `metadata.yml`:
+```yaml
+plugins:
+  datasette-enrichments-opencage:
+    api_key:
+      $env: OPENCAGE_API_KEY
+```
+Then run Datasette like this:
+```bash
+datasette mydatabase.db -m metadata.yml --root
+```
+This well give you a URL to sign in as the "root" user, which grants you access to the enrichment.
+
 ## Development
 
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
