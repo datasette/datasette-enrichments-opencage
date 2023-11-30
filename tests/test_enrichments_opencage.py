@@ -14,7 +14,8 @@ def non_mocked_hosts():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("api_key_from_config", (True, False))
-async def test_enrichment(tmpdir, api_key_from_config, httpx_mock):
+@pytest.mark.parametrize("store_json_column", (True, False))
+async def test_enrichment(tmpdir, api_key_from_config, store_json_column, httpx_mock):
     httpx_mock.add_response(
         url=re.compile(r"https://api.opencagedata.com/geocode/v1/json.*"),
         method="GET",
@@ -53,6 +54,8 @@ async def test_enrichment(tmpdir, api_key_from_config, httpx_mock):
     }
     if not api_key_from_config:
         post["api_key"] = "abc123"
+    if store_json_column:
+        post["json_column"] = "details"
 
     response = await datasette.client.post(
         "/-/enrich/data/addresses/opencage",
@@ -64,13 +67,22 @@ async def test_enrichment(tmpdir, api_key_from_config, httpx_mock):
     job_id = response.headers["Location"].split("=")[-1]
     await wait_for_job(datasette, job_id, timeout=1)
 
-    assert db["addresses"].columns_dict == {
+    expected_columns = {
         "id": int,
         "address": str,
         "latitude": float,
         "longitude": float,
     }
+    if store_json_column:
+        expected_columns["details"] = str
+
+    assert db["addresses"].columns_dict == expected_columns
 
     # Check the API key was used
     request = httpx_mock.get_request()
     assert request.url.params["key"] == "abc123"
+
+    if not store_json_column:
+        assert request.url.params["no_annotations"] == "1"
+    else:
+        assert "no_annotations" not in request.url.params
