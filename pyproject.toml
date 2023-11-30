@@ -1,0 +1,32 @@
+[project]
+name = "datasette-enrichments-opencage"
+version = "0.1"
+description = "Geocoding enrichment using OpenCage"
+readme = "README.md"
+authors = [{name = "Simon Willison"}]
+license = {text = "Apache-2.0"}
+classifiers=[
+    "Framework :: Datasette",
+    "License :: OSI Approved :: Apache Software License"
+]
+requires-python = ">=3.8"
+dependencies = [
+    "datasette",
+    "datasette-enrichments>=0.2",
+    "sqlite-utils",
+]
+
+[project.urls]
+Homepage = "https://github.com/datasette/datasette-enrichments-opencage"
+Changelog = "https://github.com/datasette/datasette-enrichments-opencage/releases"
+Issues = "https://github.com/datasette/datasette-enrichments-opencage/issues"
+CI = "https://github.com/datasette/datasette-enrichments-opencage/actions"
+
+[project.entry-points.datasette]
+enrichments_opencage = "datasette_enrichments_opencage"
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
