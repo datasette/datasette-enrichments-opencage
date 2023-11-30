@@ -19,7 +19,6 @@ def register_enrichments(datasette):
     return [OpenCageEnrichment()]
 
 
-
 class OpenCageEnrichment(Enrichment):
     name = "OpenCage geocoder"
     slug = "opencage"
@@ -30,7 +29,9 @@ class OpenCageEnrichment(Enrichment):
     async def get_config_form(self, datasette: "Datasette", db: Database, table: str):
         def get_text_columns(conn):
             db = sqlite_utils.Database(conn)
-            return [key for key, value in db[table].columns_dict.items() if value == str]
+            return [
+                key for key, value in db[table].columns_dict.items() if value == str
+            ]
 
         text_columns = await db.execute_fn(get_text_columns)
 
@@ -39,12 +40,14 @@ class OpenCageEnrichment(Enrichment):
                 "Geocode input",
                 description="A template to run against each row to generate geocoder input. Use {{ COL }} for columns.",
                 validators=[DataRequired(message="Prompt is required.")],
-                default = ' '.join(["{{ %s }}" % c for c in text_columns])
+                default=" ".join(["{{ %s }}" % c for c in text_columns]),
             )
             json_column = StringField(
                 "Store JSON in column",
                 description="To store full JSON from OpenCage, enter a column name here",
-                render_kw={"placeholder": "Leave this blank if you only want to store latitude/longitude"},
+                render_kw={
+                    "placeholder": "Leave this blank if you only want to store latitude/longitude"
+                },
             )
 
         def stash_api_key(form, field):

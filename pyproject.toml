@@ -26,7 +26,7 @@ CI = "https://github.com/datasette/datasette-enrichments-opencage/actions"
 enrichments_opencage = "datasette_enrichments_opencage"
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-asyncio"]
+test = ["pytest", "pytest-asyncio", "pytest-httpx"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
