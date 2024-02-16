@@ -106,7 +106,9 @@ class OpenCageEnrichment(Enrichment):
         ids = [row[pk] for pk in pks]
 
         def do_update(conn):
-            sqlite_utils.Database(conn)[table].update(ids, update, alter=True)
+            with conn:
+                db = sqlite_utils.Database(conn)
+                db[table].update(ids, update, alter=True)
 
         await db.execute_write_fn(do_update)
 
