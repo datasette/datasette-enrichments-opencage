@@ -12,7 +12,10 @@ import httpx
 import json
 import secrets
 import sqlite_utils
+from datasette.plugins import pm
+from . import hookspecs
 
+pm.add_hookspecs(hookspecs)
 
 @hookimpl
 def register_enrichments(datasette):
@@ -73,6 +76,11 @@ class OpenCageEnrichment(Enrichment):
         return ConfigForm if api_key else ConfigFormWithKey
 
     async def enrich_batch(self, rows, datasette, db, table, pks, config):
+
+        for result in pm.hook.register_budget_check(datasette=datasette):
+          if not result:
+              raise Exception("Budget check failed, not enriching")
+        
         #  https://api.opencagedata.com/geocode/v1/json?q=URI-ENCODED-PLACENAME&key=b591350c2f9c48a7b7176660bbfd802a
         url = "https://api.opencagedata.com/geocode/v1/json"
         params = {
