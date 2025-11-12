@@ -1,6 +1,7 @@
 import httpx
 from datasette import hookimpl
 from datasette_enrichments_opencage.hookspecs import Tx, BudgetCheck
+from datasette.utils.permissions import PermissionSQL
 
 
 class SampleCheck(BudgetCheck):
@@ -33,53 +34,6 @@ class SampleCheck(BudgetCheck):
 @hookimpl
 async def datasette_enrichments_register_budget_check(datasette) -> BudgetCheck:
     return SampleCheck()
-
-#@hookimpl
-#async def datasette_enrichments_budget_reserve(datasette, amount: int) -> Tx:
-#    """Reserve budget from the budget server."""
-#    async with httpx.AsyncClient() as client:
-#        response = await client.get(
-#            f"{BUDGET_SERVER_URL}/reserve",
-#            params={"user": USER, "amount": amount}
-#        )
-#        response.raise_for_status()
-#        data = response.json()
-#        
-#        # Create and return a Tx object
-#        tx = Tx()
-#        tx.tx_id = data["tx_id"]
-#        return tx
-#
-#@hookimpl
-#async def datasette_enrichments_budget_settle(datasette, tx: Tx, amount: int, meta: dict | None = None):
-#    """Settle a transaction with the budget server."""
-#    async with httpx.AsyncClient() as client:
-#        response = await client.get(
-#            f"{BUDGET_SERVER_URL}/settle",
-#            params={"tx_id": tx.tx_id, "amount": amount}
-#        )
-#        response.raise_for_status()
-#        return response.json()
-#@hookimpl
-#async def register_budget_check(datasette):
-#    global n
-#    response = httpx.get("http://localhost:8000/budget_check?id=simple_plugin").json()
-#    result = response.get("result", False)
-#    return result
-
-
-
-#@hookimpl
-#def register_budget_check(datasette):
-#    global n
-#    print("simple — register_budget_check, n=", n)
-#    if n > 5:
-#        return False
-#    n += 1
-#    return True
-from datasette import hookimpl
-from datasette.utils.permissions import PermissionSQL
-
 
 def pfp(letter, fg="white", bg="black"):
     return f"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='16' cy='16' r='16' fill='{bg}'%3E%3C/circle%3E%3Ctext fill='{fg}' x='16' y='16' text-anchor='middle' dominant-baseline='middle'%3E{letter}%3C/text%3E%3C/svg%3E"
