@@ -1,0 +1,4 @@
+plugins:
+  datasette-enrichments-opencage:
+    api_key:
+      $env: OPENCAGE_API_KEY

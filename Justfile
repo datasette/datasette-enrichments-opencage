@@ -6,7 +6,7 @@ dev *options:
       --prerelease=allow \
     datasette \
       --root \
-      --config datasette.yaml \
+      --config example/budget_simple/datasette.yaml \
       --plugins-dir=example/budget_simple \
       --static assets:example/budget_simple/static \
       --internal internal.db  \
