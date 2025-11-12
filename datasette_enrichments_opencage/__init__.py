@@ -96,14 +96,14 @@ class OpenCageEnrichment(Enrichment):
           budget_check = await await_me_maybe(result)
           break
         
-        if not budget_check:
-            raise Exception("No budget check registered")
-        
         amount = len(rows)
-        tx = await budget_check.reserve(amount=amount)
-        if not tx:
-            raise Exception("Budget check failed, not enriching")
+        tx = None
         
+        if budget_check:
+          tx = await budget_check.reserve(amount=amount)
+          if not tx:
+              raise Exception("Budget check failed, not enriching")
+          
         # TODO: catch errors, settle the # of successful attempts
         for row in rows:
           geocode_data = await self.call_opencage_api(row, datasette, config)
@@ -116,12 +116,13 @@ class OpenCageEnrichment(Enrichment):
               config=config
           )
         
-        # Settle the transaction
-        await budget_check.settle(
-            tx=tx,
-            amount=amount,
-            meta={"table": table, "pk_values": [row[pk] for pk in pks]},
-        )
+        # Settle the transaction, if any
+        if budget_check and tx:
+          await budget_check.settle(
+              tx=tx,
+              amount=amount,
+              meta={"table": table, "pk_values": [row[pk] for pk in pks]},
+          )
     
     async def call_opencage_api(self, row, datasette, config):
         """Make an API call to OpenCage and return the geocode data."""

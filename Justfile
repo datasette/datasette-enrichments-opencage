@@ -15,3 +15,6 @@ dev *options:
 
 dev-server:
   uv run example/budget_simple/server/demo.py
+
+test:
+  uv run --with-editable '.[test]' -m pytest 

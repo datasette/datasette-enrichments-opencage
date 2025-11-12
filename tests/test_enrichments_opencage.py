@@ -40,7 +40,15 @@ async def test_enrichment(tmpdir, api_key_from_config, store_json_column, httpx_
     metadata = {}
     if api_key_from_config:
         metadata["plugins"] = {"datasette-enrichments-opencage": {"api_key": "abc123"}}
-    datasette = Datasette([db_path], metadata=metadata)
+    datasette = Datasette(
+        [db_path],
+        metadata=metadata,
+        config={
+            "permissions": {
+                "enrichments": {"id": "*"},
+            },
+        },
+    )
 
     cookies = {"ds_actor": datasette.sign({"a": {"id": "root"}}, "actor")}
     csrftoken = (
